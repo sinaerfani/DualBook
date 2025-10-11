@@ -4,36 +4,28 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class UserRegistrationDTO {
+public class OtpVerifyDTO {
 
     @NotBlank(message = "Mobile number is required")
     @Pattern(regexp = "^09[0-9]{9}$", message = "Mobile number must be a valid Iranian number")
     private String mobileNumber;
 
-    @NotBlank(message = "Full name is required")
-    @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
-    private String fullName;
-
     @NotBlank(message = "OTP code is required")
     @Size(min = 4, max = 6, message = "OTP code must be between 4 and 6 characters")
-    private String otpCode;
+    private String code;
 
     // Constructors
-    public UserRegistrationDTO() {}
+    public OtpVerifyDTO() {}
 
-    public UserRegistrationDTO(String mobileNumber, String fullName, String otpCode) {
+    public OtpVerifyDTO(String mobileNumber, String code) {
         this.mobileNumber = mobileNumber;
-        this.fullName = fullName;
-        this.otpCode = otpCode;
+        this.code = code;
     }
 
     // Getters and Setters
     public String getMobileNumber() { return mobileNumber; }
     public void setMobileNumber(String mobileNumber) { this.mobileNumber = mobileNumber; }
 
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
-
-    public String getOtpCode() { return otpCode; }
-    public void setOtpCode(String otpCode) { this.otpCode = otpCode; }
+    public String getCode() { return code; }
+    public void setCode(String code) { this.code = code; }
 }

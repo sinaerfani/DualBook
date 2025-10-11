@@ -3,7 +3,8 @@ package com.example.dualbook.service.user;
 import com.example.dualbook.entity.User;
 import com.example.dualbook.entity.enums.RoleName;
 import com.example.dualbook.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.example.dualbook.service.otp.OtpService;
+import com.example.dualbook.service.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,26 +17,45 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final OtpService otpService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, OtpService otpService) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.otpService = otpService;
     }
 
     @Override
-    public User registerUser(String mobileNumber, String password, String fullName) {
+    public User registerUser(String mobileNumber, String fullName, String otpCode) {
+        // بررسی OTP
+        if (!otpService.verifyOtp(mobileNumber, otpCode)) {
+            throw new RuntimeException("Invalid or expired OTP code");
+        }
+
+        // بررسی وجود کاربر
         if (existsByMobileNumber(mobileNumber)) {
             throw new RuntimeException("User with this mobile number already exists");
         }
 
         User user = new User();
         user.setMobileNumber(mobileNumber);
-        user.setPassword(passwordEncoder.encode(password));
         user.setFullName(fullName);
         user.setRole(RoleName.ROLE_USER);
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public User loginWithOtp(String mobileNumber, String otpCode) {
+        // بررسی OTP
+        if (!otpService.verifyOtp(mobileNumber, otpCode)) {
+            throw new RuntimeException("Invalid or expired OTP code");
+        }
+
+        // پیدا کردن کاربر
+        User user = userRepository.findByMobileNumberAndDisabledDateIsNull(mobileNumber)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return user;
     }
 
     @Override
@@ -108,22 +128,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(Long userId, String newPassword) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-
-        if (user.getDisableDate() != null) {
-            throw new RuntimeException("Cannot change password for disabled user");
-        }
-
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-    }
-
-    @Override
     public boolean existsByMobileNumber(String mobileNumber) {
         return userRepository.existsByMobileNumberAndDisabledDateIsNull(mobileNumber);
     }
 
-
+    @Override
+    public List<User> findByRole(RoleName role) {
+        return userRepository.findByRoleAndDisableDateIsNull(role);
+    }
 }

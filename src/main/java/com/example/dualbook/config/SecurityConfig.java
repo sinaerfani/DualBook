@@ -4,6 +4,7 @@ import com.example.dualbook.service.user.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,7 +34,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/css/**", "/js/**", "/images/**", "/static/**",
                                 "/", "/error", "/403", "/access-denied",
-                                "/auth/login", "/auth/register"
+                                "/auth/**", "/otp/**", "/api/otp/**"
                         ).permitAll()
                         .requestMatchers("/api/auth/current-user").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -45,12 +46,20 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/auth/login")
+                        .logoutSuccessUrl("/")
                         .permitAll()
                 )
-                .userDetailsService(userDetailsService);
+                .authenticationProvider(authenticationProvider());
 
         return http.build();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
     }
 
     @Bean
@@ -62,6 +71,8 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // از آنجایی که از OTP استفاده می‌کنیم، این PasswordEncoder فقط برای فرمت Spring Security است
+        // و در واقعیت برای احراز هویت استفاده نمی‌شود
         return new BCryptPasswordEncoder();
     }
 

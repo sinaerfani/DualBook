@@ -17,6 +17,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    // رمز عبور dummy برای کاربران OTP-based
+    private final String DUMMY_PASSWORD = "OTP-BASED-AUTH-NO-PASSWORD";
+
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -25,16 +28,22 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String mobileNumber) throws UsernameNotFoundException {
 
         User user = userRepository.findByMobileNumberAndDisabledDateIsNull(mobileNumber)
-                .orElseThrow(() -> new UsernameNotFoundException("User.not.found.with.mobile.number: " + mobileNumber));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with mobile number: " + mobileNumber));
 
         // ایجاد نقش‌های کاربر
         List<GrantedAuthority> authorities = Collections.singletonList(
                 new SimpleGrantedAuthority(user.getRole().name())
         );
 
+        // استفاده از رمز عبور dummy - در سیستم OTP-based این رمز عبور استفاده نمی‌شود
+        // اما Spring Security به یک password نیاز دارد
         return new org.springframework.security.core.userdetails.User(
                 user.getMobileNumber(),
-                user.getPassword(),
+                DUMMY_PASSWORD, // استفاده از رمز عبور ثابت
+                true, // enabled
+                true, // accountNonExpired
+                true, // credentialsNonExpired
+                user.getDisableDate() == null, // accountNonLocked (فعال بودن کاربر)
                 authorities
         );
     }
