@@ -40,7 +40,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.fullName LIKE %:name% AND u.disableDate IS NULL")
     List<User> findByFullNameContainingAndDisableDateIsNull(@Param("name") String name);
 
-    // پیدا کردن کاربران با شماره موبایل (حتی غیرفعال)
-    @Query("SELECT u FROM User u WHERE u.mobileNumber LIKE %:mobile%")
-    List<User> findByMobileNumberContaining(@Param("mobile") String mobile);
+    // پیدا کردن کاربران فعال با شماره موبایل
+    @Query("SELECT u FROM User u WHERE u.mobileNumber LIKE %:mobile% AND u.disableDate IS NULL")
+    List<User> findByMobileNumberContainingAndDisableDateIsNull(@Param("mobile") String mobile);
+
+    // جستجوی ترکیبی در نام و شماره موبایل
+    @Query("SELECT u FROM User u WHERE (u.fullName LIKE %:query% OR u.mobileNumber LIKE %:query%) AND u.disableDate IS NULL")
+    List<User> searchUsers(@Param("query") String query);
 }

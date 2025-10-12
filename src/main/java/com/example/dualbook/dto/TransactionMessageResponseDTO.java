@@ -2,27 +2,27 @@ package com.example.dualbook.dto;
 
 import java.time.LocalDateTime;
 
-public class TransactionMessageDTO {
+public class TransactionMessageResponseDTO {
     private Long id;
     private Long transactionId;
     private String senderName;
     private String senderMobile;
     private String message;
     private LocalDateTime createdAt;
-    private LocalDateTime disableDate;
+    private Boolean isFromCurrentUser;
 
     // Constructors
-    public TransactionMessageDTO() {}
+    public TransactionMessageResponseDTO() {}
 
-    public TransactionMessageDTO(Long id, Long transactionId, String senderName, String senderMobile,
-                                 String message, LocalDateTime createdAt, LocalDateTime disableDate) {
+    public TransactionMessageResponseDTO(Long id, Long transactionId, String senderName, String senderMobile,
+                                         String message, LocalDateTime createdAt, Boolean isFromCurrentUser) {
         this.id = id;
         this.transactionId = transactionId;
         this.senderName = senderName;
         this.senderMobile = senderMobile;
         this.message = message;
         this.createdAt = createdAt;
-        this.disableDate = disableDate;
+        this.isFromCurrentUser = isFromCurrentUser;
     }
 
     // Getters and Setters
@@ -44,6 +44,6 @@ public class TransactionMessageDTO {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
-    public LocalDateTime getDisableDate() { return disableDate; }
-    public void setDisableDate(LocalDateTime disableDate) { this.disableDate = disableDate; }
+    public Boolean getIsFromCurrentUser() { return isFromCurrentUser; }
+    public void setIsFromCurrentUser(Boolean fromCurrentUser) { isFromCurrentUser = fromCurrentUser; }
 }

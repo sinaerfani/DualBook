@@ -37,4 +37,6 @@ public interface TransactionService {
 
     // بررسی وجود تراکنش در انتظار بین دو کاربر
     boolean hasPendingTransactionBetweenUsers(User user1, User user2);
+
+    List<Transaction> getTransactionsByStatus(User user, TransactionStatus status);
 }

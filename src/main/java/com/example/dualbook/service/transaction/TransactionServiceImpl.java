@@ -166,6 +166,11 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionRepository.countPendingActiveTransactionsBetweenUsers(user1, user2) > 0;
     }
 
+    @Override
+    public List<Transaction> getTransactionsByStatus(User user, TransactionStatus status) {
+        return transactionRepository.findByUserAndStatusAndActive(user, status);
+    }
+
     private Ledger createNewLedger(User user1, User user2, CurrencyType currencyType) {
         Ledger ledger = new Ledger();
         ledger.setUser1(user1);

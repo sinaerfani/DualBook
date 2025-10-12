@@ -18,9 +18,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("SELECT t FROM Transaction t WHERE t.receiver = :receiver AND t.status = :status AND t.disableDate IS NULL")
     List<Transaction> findByReceiverAndStatusAndActive(@Param("receiver") User receiver, @Param("status") TransactionStatus status);
 
-    @Query("SELECT t FROM Transaction t WHERE (t.sender = :user OR t.receiver = :user) AND t.status = :status AND t.disableDate IS NULL")
+    @Query("SELECT t FROM Transaction t WHERE (t.sender = :user OR t.receiver = :user) AND t.status = :status AND t.disableDate IS NULL ORDER BY t.createdAt DESC")
     List<Transaction> findByUserAndStatusAndActive(@Param("user") User user, @Param("status") TransactionStatus status);
-
     @Query("SELECT t FROM Transaction t WHERE t.ledger.id = :ledgerId AND t.disableDate IS NULL ORDER BY t.createdAt DESC")
     List<Transaction> findByLedgerIdAndActiveOrderByCreatedAtDesc(@Param("ledgerId") Long ledgerId);
 

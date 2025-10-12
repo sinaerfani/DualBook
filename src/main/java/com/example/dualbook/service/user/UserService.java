@@ -42,4 +42,10 @@ public interface UserService {
 
     // پیدا کردن کاربران بر اساس نقش
     List<User> findByRole(RoleName role);
+
+    // جستجوی کاربران بر اساس نام یا شماره موبایل
+    List<User> searchUsers(String query);
+
+    // پیدا کردن کاربران با شماره موبایل (برای استفاده در تراکنش‌ها)
+    Optional<User> findByMobileNumberForTransaction(String mobileNumber);
 }

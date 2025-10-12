@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -143,5 +144,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findByRole(RoleName role) {
         return userRepository.findByRoleAndDisableDateIsNull(role);
+    }
+
+    @Override
+    public List<User> searchUsers(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return List.of();
+        }
+
+        String searchTerm = "%" + query.trim() + "%";
+
+        // استفاده از متد جستجوی ترکیبی جدید
+        return userRepository.searchUsers(searchTerm);
+    }
+
+    @Override
+    public Optional<User> findByMobileNumberForTransaction(String mobileNumber) {
+        // این متد برای استفاده در تراکنش‌ها است و کاربران غیرفعال را نیز برمی‌گرداند
+        // تا بتوان تراکنش‌های قدیمی را مشاهده کرد
+        return userRepository.findByMobileNumber(mobileNumber);
     }
 }

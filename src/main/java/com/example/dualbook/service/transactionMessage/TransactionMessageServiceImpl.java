@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class TransactionMessageServiceImpl implements TransactionMessageService {
+public class TransactionMessageServiceImpl implements com.example.dualbook.service.message.TransactionMessageService {
 
     private final TransactionMessageRepository messageRepository;
     private final TransactionRepository transactionRepository;
@@ -48,13 +48,36 @@ public class TransactionMessageServiceImpl implements TransactionMessageService 
     @Override
     public List<TransactionMessage> getTransactionMessages(Long transactionId) {
         Transaction transaction = transactionService.findById(transactionId);
-        return messageRepository.findByTransactionOrderByCreatedAtAsc(transaction);
+        return messageRepository.findByTransactionIdAndActive(transactionId);
+    }
+
+    @Override
+    public TransactionMessage getMessageById(Long messageId) {
+        return messageRepository.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("Message not found"));
+    }
+
+    @Override
+    public TransactionMessage updateMessage(Long messageId, User user, String newMessage) {
+        TransactionMessage message = getMessageById(messageId);
+
+        // فقط فرستنده پیام می‌تواند آن را به‌روزرسانی کند
+        if (!message.getSender().equals(user)) {
+            throw new RuntimeException("Only message sender can update the message");
+        }
+
+        // فقط پیام‌های جدید (کمتر از 5 دقیقه) قابل ویرایش هستند
+        if (message.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(5))) {
+            throw new RuntimeException("Cannot edit messages older than 5 minutes");
+        }
+
+        message.setMessage(newMessage);
+        return messageRepository.save(message);
     }
 
     @Override
     public void deleteMessage(Long messageId, User user) {
-        TransactionMessage message = messageRepository.findById(messageId)
-                .orElseThrow(() -> new RuntimeException("Message not found"));
+        TransactionMessage message = getMessageById(messageId);
 
         // فقط فرستنده پیام می‌تواند آن را حذف کند
         if (!message.getSender().equals(user)) {
