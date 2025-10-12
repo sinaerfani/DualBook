@@ -4,7 +4,6 @@ import com.example.dualbook.entity.OtpCode;
 import com.example.dualbook.entity.User;
 import com.example.dualbook.repository.OtpCodeRepository;
 import com.example.dualbook.repository.UserRepository;
-import com.example.dualbook.service.otp.OtpService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -157,6 +156,15 @@ public class OtpServiceImpl implements OtpService {
             user.setOtpRequestsToday(user.getOtpRequestsToday() + 1);
             user.setLastOtpRequest(LocalDateTime.now());
             userRepository.save(user);
+        } else {
+            // اگر کاربر وجود ندارد، یک کاربر موقت ایجاد می‌کنیم
+            User tempUser = new User();
+            tempUser.setMobileNumber(mobileNumber);
+            tempUser.setFullName("Temp User");
+            tempUser.setOtpRequestsToday(1);
+            tempUser.setLastOtpRequest(LocalDateTime.now());
+            tempUser.setLastOtpResetDate(LocalDateTime.now());
+            userRepository.save(tempUser);
         }
     }
 

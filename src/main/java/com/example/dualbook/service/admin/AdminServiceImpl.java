@@ -8,7 +8,6 @@ import com.example.dualbook.entity.enums.TransactionStatus;
 import com.example.dualbook.repository.LedgerRepository;
 import com.example.dualbook.repository.TransactionRepository;
 import com.example.dualbook.repository.UserRepository;
-import com.example.dualbook.service.admin.AdminService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +57,10 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public long getPendingTransactionsCount() {
-        return transactionRepository.findByUserAndStatusAndActive(null, TransactionStatus.PENDING).size();
+        // اصلاح: باید تمام تراکنش‌های pending را بشماریم
+        return transactionRepository.findAll().stream()
+                .filter(t -> t.getStatus() == TransactionStatus.PENDING && t.getDisableDate() == null)
+                .count();
     }
 
     @Override

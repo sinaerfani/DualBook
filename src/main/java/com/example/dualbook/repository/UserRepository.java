@@ -39,4 +39,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // پیدا کردن کاربران فعال با نام
     @Query("SELECT u FROM User u WHERE u.fullName LIKE %:name% AND u.disableDate IS NULL")
     List<User> findByFullNameContainingAndDisableDateIsNull(@Param("name") String name);
+
+    // پیدا کردن کاربران با شماره موبایل (حتی غیرفعال)
+    @Query("SELECT u FROM User u WHERE u.mobileNumber LIKE %:mobile%")
+    List<User> findByMobileNumberContaining(@Param("mobile") String mobile);
 }

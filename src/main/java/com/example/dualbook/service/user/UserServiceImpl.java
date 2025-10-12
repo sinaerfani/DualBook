@@ -4,7 +4,6 @@ import com.example.dualbook.entity.User;
 import com.example.dualbook.entity.enums.RoleName;
 import com.example.dualbook.repository.UserRepository;
 import com.example.dualbook.service.otp.OtpService;
-import com.example.dualbook.service.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,14 +31,23 @@ public class UserServiceImpl implements UserService {
         }
 
         // بررسی وجود کاربر
-        if (existsByMobileNumber(mobileNumber)) {
-            throw new RuntimeException("User with this mobile number already exists");
-        }
+        Optional<User> existingUser = userRepository.findByMobileNumber(mobileNumber);
+        User user;
 
-        User user = new User();
-        user.setMobileNumber(mobileNumber);
-        user.setFullName(fullName);
-        user.setRole(RoleName.ROLE_USER);
+        if (existingUser.isPresent()) {
+            user = existingUser.get();
+            // اگر کاربر وجود دارد اما غیرفعال است، آن را فعال کنیم
+            if (user.getDisableDate() != null) {
+                user.setDisableDate(null);
+            }
+            user.setFullName(fullName);
+        } else {
+            // ایجاد کاربر جدید
+            user = new User();
+            user.setMobileNumber(mobileNumber);
+            user.setFullName(fullName);
+            user.setRole(RoleName.ROLE_USER);
+        }
 
         return userRepository.save(user);
     }
@@ -53,7 +61,7 @@ public class UserServiceImpl implements UserService {
 
         // پیدا کردن کاربر
         User user = userRepository.findByMobileNumberAndDisabledDateIsNull(mobileNumber)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found or disabled"));
 
         return user;
     }
