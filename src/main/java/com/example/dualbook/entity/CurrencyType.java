@@ -6,14 +6,14 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "currenc_Type")
+@Table(name = "currency_type")
 public class CurrencyType extends BaseEntity {
 
-    @NotBlank
-    @Column(nullable = false)
+
     String symbol;
     String nameFa;
-
+    @NotBlank
+    @Column(nullable = false)
     public String getSymbol() {
         return symbol;
     }

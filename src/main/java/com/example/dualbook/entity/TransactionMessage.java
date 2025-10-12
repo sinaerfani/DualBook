@@ -7,28 +7,28 @@ import java.time.LocalDateTime;
 @Table(name = "transaction_messages")
 public class TransactionMessage extends BaseEntity{
 
-    @ManyToOne
-    @JoinColumn(name = "transaction_id", nullable = false)
+
     private Transaction transaction;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_id", nullable = false)
+
     private User sender;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+
     private String message;
 
 
 
 
     // Getters and Setters
-
+    @ManyToOne
+    @JoinColumn(name = "transaction_id", nullable = false)
     public Transaction getTransaction() { return transaction; }
     public void setTransaction(Transaction transaction) { this.transaction = transaction; }
-
+    @ManyToOne
+    @JoinColumn(name = "sender_id", nullable = false)
     public User getSender() { return sender; }
     public void setSender(User sender) { this.sender = sender; }
-
+    @Column(nullable = false, columnDefinition = "TEXT")
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
 

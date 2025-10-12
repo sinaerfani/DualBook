@@ -7,19 +7,15 @@ import java.time.LocalDateTime;
 @Table(name = "otp_codes")
 public class OtpCode extends BaseEntity {
 
-    @Column(nullable = false)
+
     private String mobileNumber;
 
-    @Column(nullable = false)
     private String code;
 
-    @Column(nullable = false)
     private LocalDateTime expiresAt;
 
-    @Column(nullable = false)
     private Boolean used = false;
 
-    @Column(nullable = false)
     private Integer attemptCount = 0;
 
     // Constructors
@@ -34,30 +30,32 @@ public class OtpCode extends BaseEntity {
     }
 
     // Getters and Setters
+    @Column(nullable = false)
     public String getMobileNumber() { return mobileNumber; }
     public void setMobileNumber(String mobileNumber) { this.mobileNumber = mobileNumber; }
-
+    @Column(nullable = false)
     public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }
-
+    @Column(nullable = false)
     public LocalDateTime getExpiresAt() { return expiresAt; }
     public void setExpiresAt(LocalDateTime expiresAt) { this.expiresAt = expiresAt; }
-
+    @Column(nullable = false)
     public Boolean getUsed() { return used; }
     public void setUsed(Boolean used) { this.used = used; }
-
+    @Column(nullable = false)
     public Integer getAttemptCount() { return attemptCount; }
     public void setAttemptCount(Integer attemptCount) { this.attemptCount = attemptCount; }
 
     // Utility methods
+    @Transient
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt);
     }
-
+    @Transient
     public boolean isValid() {
         return !used && !isExpired();
     }
-
+    @Transient
     public void incrementAttempt() {
         this.attemptCount++;
     }
